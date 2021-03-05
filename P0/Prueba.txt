@@ -1,0 +1,3 @@
+Prueba de creacion
+archivo de texto 
+desde VSCode
