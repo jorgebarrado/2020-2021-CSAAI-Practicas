@@ -1,3 +1,16 @@
+@font-face
+{
+   font-family: "simpsontitulo";
+   src: url("simpsonfont.otf");
+}
+
+@font-face
+{
+   font-family: "simpsonletra";
+   src: url("akbar.ttf");
+}
+
+
 body {
     background-image: url(https://p4.wallpaperbetter.com/wallpaper/772/718/465/clouds-the-simpsons-figure-background-wallpaper-preview.jpg);
     background-size: cover;
@@ -10,7 +23,7 @@ body {
   }
 
   .T_Titulo {
-    font-family:"Times New Roman";
+    font-family:"simpsonletra";
     font-size:150%;
   }
 
