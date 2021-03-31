@@ -9,18 +9,15 @@ body {
     font-size:100%;
   }
 
-  #T_Titulo {
+  .T_Titulo {
     font-family:"Times New Roman";
     font-size:150%;
   }
 
-  #foto_perfil{
-    display: inline-block;
-    margin-left: 1000px;
-  }
 
-  #DATOS{
-    display: inline-block;
+  
+  #box1{
+    display:flex;
     margin-left: 300px;
-    margin-right: 300px
+    margin-right: 300px;
   }
