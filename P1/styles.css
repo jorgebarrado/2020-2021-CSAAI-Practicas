@@ -22,7 +22,10 @@ body {
     font-family:"akbar";
     font-size:100%;
   }
-
+  h1{
+    font-family:"akbar";
+    font-size:300%;
+  }
   #T_Titulo {
     font-family:"simpsontitulo";
     font-size:150%;
@@ -34,4 +37,5 @@ body {
     display:flex;
     margin-left: 50px;
     margin-right: 50px;
+    background-color: rgba(240, 248, 255, 0.37);
   }
