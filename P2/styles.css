@@ -1,8 +1,21 @@
 button{
-    background-color: rgba(0, 0, 0, 0);
+    background-color: rgba(0, 0, 0, 0.336);
     position: relative;
     padding: 10px;
     width: 10%;
     height:30px;
   
   }
+
+
+
+#display{
+  background-color: rgba(0, 0, 0, 0.308);
+  color: rgba(20, 20, 20, 0.904);
+  position: left;
+  margin-left: 320px;
+
+  padding: 10px;
+  width: 10%;
+  height:30px;
+}
