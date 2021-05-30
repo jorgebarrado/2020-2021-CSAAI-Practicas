@@ -34,6 +34,7 @@ digito[i].onclick = (ev) => {
     op = op + 1;
     display_2.innerHTML = eval(display.innerHTML);
   }else{
+
     display_2.innerHTML = eval(display.innerHTML);
   }
 }
@@ -70,7 +71,7 @@ borrar.onclick = () => {
         }else{
           op = op - 1; 
         }
-         display.innerHTML  = cadena;
+         display.innerHTML = cadena;
       }else{ 
         display.innerHTML  = cadena;
       }
@@ -81,16 +82,17 @@ borrar.onclick = () => {
 
 //-- Evaluar la expresion
 igual.onclick = () => {
+   display_2.innerHTML = display.innerHTML + ' =';
     display.innerHTML = eval(display.innerHTML);
     estado = ESTADO.OP0;
     op = 0;
-    display_2.innerHTML = eval(display.innerHTML);
-
     
   }
+
 //-- Poner a cero la expresion
 clear.onclick = () => {
   display.innerHTML = '0';
+  display_2.innerHTML = ' ';
   estado = ESTADO.OP0;
   
   op = 0;
