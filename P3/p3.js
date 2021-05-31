@@ -17,26 +17,27 @@ const ESTADO = {
 
 let estado = ESTADO.INICIO;
 
+//-- Vidas Inicio
+let Vidas = 3;
+
+
+//-- Puntos Inicio
+let Puntuación = 00;
+
 //-- Coordenada inial: Pelota
 let x = canvas.width /2;
 let y = canvas.height -60;
 
 //-- Coordenada inicial: Raqueta
-let l = canvas.width /2;
+let l = canvas.width /2 -50;
 let p = canvas.height -50;
 
 //-- Velocidad: Pelota
 let velx = 5;
 let vely = -5;
 
-//-- Velcidad Raqueta
+//-- Velcidad: Raqueta
 let vell = 50;
-
-//-- Vidas inicio
-let Vidas = 5;
-
-//-- Puntos inicio
-let Puntuación = 0;
 
 //-- Inicializando teclas NO pulsadas
 let rightPressed = false;
@@ -73,6 +74,14 @@ for (let i = 0; i < LADRILLO.Filas; i++){
 function update(){
   console.log();
 
+  //-- Sacar Pelota
+
+     window.onkeydown = (e) =>{
+       if (e.key == ' ' && estado == ESTADO.INICIO){
+         estado = ESTADO.JUGANDO;
+        }
+      }
+    
   //-- Rebote: Laterales 
   if (x < 0 || x >= (canvas.width)){
     velx = -velx;
@@ -84,45 +93,22 @@ function update(){
   }
   
   //-- Perder vida: Parte Inferior
-  if (y >= 700 ){
-    console.log();
+  if (y >= canvas.height){
     estado = ESTADO.INICIO;
-    x = canvas.height/2;
-    y = canvas.height -50;
+    x = canvas.width /2;
+    y = canvas.height -60;
     vely = -vely;
     velx = -velx;
     Vidas -= 1;
+
     if (Vidas == 0){
       estado = ESTADO.FIN;
     }
   }
-  
-  //-- Cambiar de Estado
-  if (estado == ESTADO.FIN){ 
 
-    //-- Ganar la Paritda: Destruir todos los ladrillos 
-    if (Puntuación == Filas*Columnas){
-      ctx.font = "30px Arial Black";
-      ctx.fillStyle = 'green'
-      ctx.fillText("HAS GANADO", 200, 40);
-
-    //-- Perder la partida: Quedarse sin vidas
-    }else{ 
-      ctx.font = "50px Arial Black";
-      ctx.fillStyle = 'red'
-      ctx.fillText("HAS PERDIDO", 200, 40);
-      }
-    }
-    
-    //-- Iniciar Partida
-    window.onkeydown = (e) =>{
-      if (e.key == ' ' && estado == ESTADO.INICIO){
-        estado = ESTADO.JUGANDO;
-      }
-    }
-
+    //-- COLISIONES 
     //-- Rebote: Raqueta
-    if ((x + 10) >= l && x <=(l + 100) && (y + 5) >= p && y <=(p + 10)){
+    if ((x + 10) >= l && x <=(l + 100) && (y + 2) >= p && y <=(p + 10)){
     vely = -vely;
     }
 
@@ -150,12 +136,12 @@ function update(){
     
     //-- Movimiento: Raqueta DERECHA
     window.onkeydown = (e) =>{
-      if(e.keyCode == 39 && l < 605){
+      if(e.keyCode == 39 && l < 600){
         rightPressed = true;
         l = l + vell;
         
     //-- Movimiento: Raqueta IZQUIERDA  
-      }else if(e.keyCode == 37 && l > 2){
+      }else if(e.keyCode == 37 && l > 1){
         leftPressed = true;
         l = l - vell;
       }
@@ -174,13 +160,22 @@ function update(){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   //-- DIBUJAR
+  if ( estado == ESTADO.INICIO){
+    ctx.beginPath();
+    ctx.font = "30px Arial";
+    ctx.strokeStyle = 'black';
+    ctx.lineWidth = 1.5;
+    ctx.textAlign = "center";
+    ctx.strokeText("PULSA ESPACIO PARA SACAR ", canvas.width/2, canvas.height/2);
+    ctx.closePath();
+  }
   //-- Dibujar: Pelota
   ctx.beginPath();
   if (estado == ESTADO.JUGANDO){
     ctx.arc(x, y, 5, 0, 2 * Math.PI);
   }
   ctx.strokeStyle = 'black';
-  ctx.lineWidth = 3;
+  ctx.lineWidth = 2;
   ctx.fillStyle = 'Orange';
   ctx.fill()
   ctx.stroke()
@@ -190,8 +185,8 @@ function update(){
   ctx.beginPath();
   ctx.rect(l, p, 100, 10);
   ctx.fillStyle = 'white';
-  ctx.stroke()
   ctx.fill()
+  ctx.stroke()
   ctx.closePath();
   
   //-- Dibujar: Marcadores 
@@ -199,27 +194,12 @@ function update(){
   ctx.font = "25px Arial";
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 1.5;
-  ctx.strokeText("Puntos: " + Puntuación, 10, canvas.height - 10);
-  ctx.strokeText("Vidas: " + Vidas, canvas.width - 100, canvas.height - 10);
+  ctx.textAlign = "center";
+  ctx.strokeText("Puntos: " + Puntuación, 60, canvas.height - 10);
+  ctx.strokeText("Vidas: " + Vidas, canvas.width - 60, canvas.height - 10);
   ctx.closePath();
 
-  //-- Dibujar: Mensajes Fin de partida
-    //-- Mensaje: Victoria 
-  if (Puntuación == 50){
-    ctx.font = "30px Arial Black";
-    ctx.fillStyle = 'green'
-    ctx.fillText("YOU WIN", canvas.width/2, canvas.height/2);
-    estado = ESTADO.FIN;
-  }
 
-    //-- Mensaje: Derrota
-  if (Vidas == 0){
-    ctx.font = "30px Arial Black";
-    ctx.fillStyle = 'red'
-    ctx.fillText("YOU LOST", 140, 40);
-    estado = ESTADO.FIN;
-  }
-  
   //-- Dibujar: Ladrillos
   for (let i = 0; i < LADRILLO.Filas; i++) {
     for (let j = 0; j < LADRILLO.Columnas; j++){
@@ -238,6 +218,28 @@ function update(){
     }
   }
 
+  //-- Dibujar: Mensajes Fin de partida
+  //-- Mensaje: Victoria 
+  if (Puntuación == 50){
+    ctx.beginPath();
+    ctx.font = "50px Arial Black";
+    ctx.fillStyle ='hsl('+ (Math.random()*100 + 90) + ' ,70% ,50%)'
+    ctx.textAlign = "center";
+    ctx.fillText("YOU WIN", canvas.width/2, canvas.height/2);
+    ctx.closePath();
+    estado = ESTADO.FIN;
+  }
+  
+  //-- Mensaje: Derrota
+  if (Vidas == 0){
+    ctx.beginPath();
+    ctx.font = "50px Arial ";
+    ctx.strokeStyle = 'hsl(0 ,100% ,50%)'
+    ctx.textAlign = "center";
+    ctx.strokeText("YOU LOST ", canvas.width/2, canvas.height/2);
+    ctx.closePath();
+    estado = ESTADO.FIN;
+  }
   requestAnimationFrame(update);
 }
 
