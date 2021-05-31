@@ -2,267 +2,243 @@ console.log("Ejecutando JS...");
 
 const canvas = document.getElementById("canvas");
 
-//-- Definir el tamaño del convas
+//-- Tamaño del convas
 canvas.width = 700;
 canvas.height = 700;
 
-//-- Obtener el contexto del canvas
 const ctx = canvas.getContext("2d");
 
+//-- Estados del juego
 const ESTADO = {
-  START: 0,
-  INIT: 1,
-  INGAME: 2,
-  FINISH: 3,
+  INICIO: 0,
+  JUGANDO: 1,
+  FIN: 2,
 }
 
-let estado = ESTADO.START;
+let estado = ESTADO.INICIO;
 
-//-- Coordenadas de la pelota
-let x = 250;
-let y = 640;
+//-- Coordenada inial: Pelota
+let x = canvas.width /2;
+let y = canvas.height -60;
 
-//-- Velocidades de la pelota
+//-- Coordenada inicial: Raqueta
+let l = canvas.width /2;
+let p = canvas.height -50;
+
+//-- Velocidad: Pelota
 let velx = 5;
 let vely = -5;
- 
-//-- coordenadas Raqueta
-let l = 300;
-let p = 650;
 
 //-- Velcidad Raqueta
-let vell = 30;
+let vell = 50;
 
-//-- Inicializando contador vidas
-let lifes = 5;
+//-- Vidas inicio
+let Vidas = 5;
+
+//-- Puntos inicio
+let Puntuación = 0;
 
 //-- Inicializando teclas NO pulsadas
 let rightPressed = false;
 let leftPressed = false;
-let Puntuación = 0;
 
-//-- Constantes de los ladrillos
+//-- Ladrillos: Numero y Tamaño 
 const LADRILLO = {
-  F: 5,  // Filas
-  C: 10,  // Columnas
-  w: 55, // Ancho
-  h: 10, // Alto
+  Filas: 5,  
+  Columnas: 10,  
+  Ancho: 60, 
+  Alto: 10, 
   origen_x: 10,
   origen_y: 85,
-  padding: 5,
+  padding: 9,
   visible: true
 };
 
-  //-- Estructura de los ladrillos
-//-- Creación de los ladrillos, que inicialmente está vacío
-//-- en el objeto ladrillos, que inicialmente está vacío
 const ladrillos = [];
-
-//-- Recorrer todas las filas. La veriable i toma valores de 0 hasta F-1 (número de filas)
-for (let i = 0; i < LADRILLO.F; i++) {
-    ladrillos[i] = [];  //-- Inicilizar la fila. Las filas son a su vez Arrays que inicialmente están vacíos
-
-    //-- Recorrer las C columnas de la fila i. La variable j toma valores de 0 hasta C-1 (numero de columnas)
-    for (let j = 0; j < LADRILLO.C; j++) {
-
-        //-- Calcular valores para el ladrillo de la fila i y la columna j
-        //-- Algunos valores son constantes. Otros dependen de i y j
-      ladrillos[i][j] = {
-          x: (LADRILLO.w + LADRILLO.padding) * j +  LADRILLO.origen_x,
-          y: (LADRILLO.h + LADRILLO.padding) * i + LADRILLO.origen_y,
-          w: LADRILLO.w,
-          h: LADRILLO.h,
-          padding: LADRILLO.padding,
-          visible: LADRILLO.visible
-        };
-    }
+for (let i = 0; i < LADRILLO.Filas; i++){
+  ladrillos[i] = [];
+  for (let j = 0; j < LADRILLO.Columnas; j++){
+    ladrillos[i][j]={
+      x: (LADRILLO.Ancho + LADRILLO.padding) * j +  LADRILLO.origen_x,
+      y: (LADRILLO.Alto + LADRILLO.padding) * i + LADRILLO.origen_y,
+      w: LADRILLO.Ancho,
+      h: LADRILLO.Alto,
+      padding: LADRILLO.padding,
+      visible: LADRILLO.visible
+    };
+  }
 }
 
-//-- Funcion principal de animacion
-function update() 
-{
-    console.log("test");
-    //-- Algoritmo de animacion:
-    //-- 1) Actualizar posicion del  elemento
-    //-- (física del movimiento rectilineo uniforme)
-  
-     //-- Condicion de rebote en extremos verticales del canvas
-     if (x < 0 || x >= (canvas.width - 20) ) {
-      velx = -velx;
-    }
-  
-    //-- Condición de rebote en extremos horizontales del canvas
-    if (y <= 60) {
-      vely = -vely;
-    }
+//-- Funcion principal del Juego
+function update(){
+  console.log();
 
-    //-- Codición si la bola pasa la raqueta de abajo se reinicia el movimiento
-    if (y >= 700 ) {
-      console.log("fuera");
-      estado = ESTADO.START;
-      x = 300;
-      y = 640;
-      vely = -vely;
-      velx = -velx;
-      lifes -= 1;
-      if (lifes == 0) {
-        estado = ESTADO.FINISH;
-      }
+  //-- Rebote: Laterales 
+  if (x < 0 || x >= (canvas.width)){
+    velx = -velx;
+  }
+
+  //-- Rebote: Parte Superior  
+  if (y <= 10){
+    vely = -vely;
+  }
+  
+  //-- Perder vida: Parte Inferior
+  if (y >= 700 ){
+    console.log();
+    estado = ESTADO.INICIO;
+    x = canvas.height/2;
+    y = canvas.height -50;
+    vely = -vely;
+    velx = -velx;
+    Vidas -= 1;
+    if (Vidas == 0){
+      estado = ESTADO.FIN;
     }
-    if (estado == ESTADO.FINISH){
-      //-Mensaje victoria
-      if (Puntuación == 50){
+  }
+  
+  //-- Cambiar de Estado
+  if (estado == ESTADO.FIN){ 
+
+    //-- Ganar la Paritda: Destruir todos los ladrillos 
+    if (Puntuación == Filas*Columnas){
       ctx.font = "30px Arial Black";
-      ctx.fillStyle = 'RED'
-      ctx.fillText("VICTORY", 200, 40);
-      console.log("victoria");
-      }else{
-      //-Mensaje derrota
+      ctx.fillStyle = 'green'
+      ctx.fillText("HAS GANADO", 200, 40);
+
+    //-- Perder la partida: Quedarse sin vidas
+    }else{ 
       ctx.font = "50px Arial Black";
       ctx.fillStyle = 'red'
-      ctx.fillText("¡¡GAME OVER!!", 200, 40);
-      console.log("Has perdido");
+      ctx.fillText("HAS PERDIDO", 200, 40);
+      }
+    }
+    
+    //-- Iniciar Partida
+    window.onkeydown = (e) =>{
+      if (e.key == ' ' && estado == ESTADO.INICIO){
+        estado = ESTADO.JUGANDO;
       }
     }
 
-    window.onkeydown = (e) => {
-    if (e.key == ' ' && estado == ESTADO.START){
-      console.log("DIBUJAR");
-      estado = ESTADO.INGAME;
-      }
-    }
-
-    //-Colision bola con raqueta
-    if ((x + 10) >= l && x <=(l + 100) &&
-    (y + 5) >= p && y <=(p + 10)) {
+    //-- Rebote: Raqueta
+    if ((x + 10) >= l && x <=(l + 100) && (y + 5) >= p && y <=(p + 10)){
     vely = -vely;
     }
 
-    if (estado == ESTADO.INGAME){
-      for (let i = 0; i < LADRILLO.F; i++) {
-          for (let j = 0; j < LADRILLO.C; j++) {
-            if (ladrillos[i][j].visible == true){
-                  if ((x + 10) >= ladrillos[i][j].x && x <=(ladrillos[i][j].x + 70) &&
-                      (y + 10) >= ladrillos[i][j].y && y <=(ladrillos[i][j].y + 25)) {
-                      ladrillos[i][j].visible = false;
-                      vely = -vely;
-                      Puntuación += 1;
-            }
+    //-- Destruir Ladrillo
+    if (estado == ESTADO.JUGANDO){
+      for (let i = 0; i < LADRILLO.Filas; i++) {
+        for (let j = 0; j < LADRILLO.Columnas; j++) {
+            if (ladrillos[i][j].visible == true) {
+              if ((x + 10) >= ladrillos[i][j].x && x <=(ladrillos[i][j].x + 70) && (y + 10) >= ladrillos[i][j].y && y <=(ladrillos[i][j].y + 20)){
+                  ladrillos[i][j].visible = false;
+                  vely = -vely;
+                  Puntuación += 1;
+                }
+              }
           }
+        }
+    }
+
+  //-- MOVIMIENTOS 
+  if (estado == ESTADO.JUGANDO){
+
+    //-- Moviemiento: Pelota
+    x = x + velx;
+    y = y + vely;
+    
+    //-- Movimiento: Raqueta DERECHA
+    window.onkeydown = (e) =>{
+      if(e.keyCode == 39 && l < 605){
+        rightPressed = true;
+        l = l + vell;
+        
+    //-- Movimiento: Raqueta IZQUIERDA  
+      }else if(e.keyCode == 37 && l > 2){
+        leftPressed = true;
+        l = l - vell;
+      }
+    }
+
+    //-- Liberar Teclas 
+    window.onkeyup = (e) =>{
+      if (e.keyCode == 39){
+        rightPressed = false; 
+      }else if(e.keyCode == 37){
+        leftPressed = false;
       }
     }
   }
-
-    //-- Actualizar la posición
-    if (estado == ESTADO.INGAME) {
-      x = x + velx;
-      y = y + vely;
-
-      window.onkeydown = (e) => {     // Tecla pulsada
-        if(e.keyCode == 39 && l < 507) { // Muro derecha
-            rightPressed = true;
-            l = l + vell;
-          }
-          else if(e.keyCode == 37 && l > 2) { // Muro Izquierda
-            leftPressed = true;
-            l = l - vell;
-          } 
-        }
-    
-
-        window.onkeyup = (e) => {       // Tecla liberada
-        if (e.keyCode == 39) {
-            rightPressed = false;
-            
-          }
-        else if(e.keyCode == 37) {
-            leftPressed = false;
-            
-            } 
-          }
-    }
-    
-    //-- 2) Borrar el canvas
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-    //-- 3) Dibujar los elementos visibles
-    ctx.beginPath();
-
-    //-- Dibujar un circulo: coordenadas x,y del centro
-    //-- Radio, Angulo inicial y angulo final
-    if (estado == ESTADO.INGAME) {
-      ctx.arc(x, y, 5, 0, 2 * Math.PI);
-    }
-    ctx.strokeStyle = 'black';
-    ctx.lineWidth = 3;
-    ctx.fillStyle = 'red';
-
-
-    //-- Dibujar el relleno
-    ctx.fill()
-
-    //-- Dibujar el trazo
-    ctx.stroke()
+  
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  
+  //-- DIBUJAR
+  //-- Dibujar: Pelota
+  ctx.beginPath();
+  if (estado == ESTADO.JUGANDO){
+    ctx.arc(x, y, 5, 0, 2 * Math.PI);
+  }
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 3;
+  ctx.fillStyle = 'Orange';
+  ctx.fill()
+  ctx.stroke()
   ctx.closePath();
 
+  //-- Dibujar: Raqueta
   ctx.beginPath();
-    //-- Raqueta
-    ctx.rect(l ,p , 90, 8);
-    ctx.fillStyle = 'white';
-
-    //-- Dibujar el trazo
-    ctx.stroke()
-
-    //-- Dibujar el relleno
-    ctx.fill()  
-    ctx.closePath()
-
+  ctx.rect(l, p, 100, 10);
+  ctx.fillStyle = 'white';
+  ctx.stroke()
+  ctx.fill()
+  ctx.closePath();
+  
+  //-- Dibujar: Marcadores 
+  ctx.beginPath();
   ctx.font = "25px Arial";
-  ctx.filltyle = 'black';
-  ctx.fillText("Score " + Puntuación, 10, 40);
-  ctx.fillText("Vidas: " + lifes, 430, 40);
+  ctx.strokeStyle = 'black';
+  ctx.lineWidth = 1.5;
+  ctx.strokeText("Puntos: " + Puntuación, 10, canvas.height - 10);
+  ctx.strokeText("Vidas: " + Vidas, canvas.width - 100, canvas.height - 10);
+  ctx.closePath();
 
-  if (Puntuación == 35){
-  ctx.font = "30px Arial Black";
-  ctx.fillStyle = 'green'
-  ctx.fillText("VICTORY", 200, 40);
-  estado = ESTADO.FINISH;
+  //-- Dibujar: Mensajes Fin de partida
+    //-- Mensaje: Victoria 
+  if (Puntuación == 50){
+    ctx.font = "30px Arial Black";
+    ctx.fillStyle = 'green'
+    ctx.fillText("YOU WIN", canvas.width/2, canvas.height/2);
+    estado = ESTADO.FIN;
   }
 
-  if (lifes == 0){
-      ctx.font = "30px Arial Black";
-      ctx.fillStyle = 'red'
-      ctx.fillText("FIN DEL JUEGO", 140, 40);
-      console.log("Has perdido");
-      estado = ESTADO.FINISH;
+    //-- Mensaje: Derrota
+  if (Vidas == 0){
+    ctx.font = "30px Arial Black";
+    ctx.fillStyle = 'red'
+    ctx.fillText("YOU LOST", 140, 40);
+    estado = ESTADO.FIN;
   }
-
-
-  //-- Dibujar ladrillos
-  for (let i = 0; i < LADRILLO.F; i++) {
-    for (let j = 0; j < LADRILLO.C; j++) {
-      //-- Si el ladrillo es visible se pinta
-      if (ladrillos[i][j].visible == true) {
+  
+  //-- Dibujar: Ladrillos
+  for (let i = 0; i < LADRILLO.Filas; i++) {
+    for (let j = 0; j < LADRILLO.Columnas; j++){
+      if (ladrillos[i][j].visible == true){
         ctx.beginPath();
-        ctx.rect(ladrillos[i][j].x, ladrillos[i][j].y, LADRILLO.w, LADRILLO.h);
-        var cr = 'rgb('+
-        Math.floor(Math.random()*256)+','+
-        Math.floor(Math.random()*256)+','+
-        Math.floor(Math.random()*256)+')';
-    
-      ctx.fillStyle = 'hsl(' + 100 * Math.random() + ', 70%, 70%)';
-
-
+        ctx.rect(ladrillos[i][j].x, ladrillos[i][j].y, LADRILLO.Ancho, LADRILLO.Alto);
+        ctx.lineWidth = 2;
+        ctx.strokeStyle = 'black';
+        ctx.fillStyle = 'hsl('+ 100 * Math.random() + ' ,70% ,70%)';
         ctx.fill();
+        ctx.stroke();
         ctx.closePath();
+      }else if(ladrillos[i][j].visible == false){
+        ladrillos[i][j] = [];
       }
-      else if(ladrillos[i][j].visible == false){
-      ladrillos[i][j] = [];
     }
   }
-}
-  //-- 4) Volver a ejecutar update cuando toque
+
   requestAnimationFrame(update);
 }
-//-- ¡Que empiece la función!
+
 update();

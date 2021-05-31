@@ -6,4 +6,7 @@ canvas {
     border-radius: 5px;
   }
 
-  
+  body{
+    display: inline-flexbox;
+    text-align:center;
+  }
