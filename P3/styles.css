@@ -7,6 +7,7 @@ canvas {
   }
 
   body{
+    background-color: rgba(255, 207, 74, 0.241);
     display: inline-flexbox;
     text-align:center;
   }
