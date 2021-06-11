@@ -195,8 +195,8 @@ function update(){
   ctx.strokeStyle = 'black';
   ctx.lineWidth = 1.5;
   ctx.textAlign = "center";
-  ctx.strokeText("Puntos: " + Puntuación, 60,  30);
-  ctx.strokeText("Vidas: " + Vidas, canvas.width - 60,  30);
+  ctx.strokeText("Puntos: " + Puntuación, 70, 40);
+  ctx.strokeText("Vidas: " + Vidas, canvas.width - 70, 40);
   ctx.closePath();
 
 
